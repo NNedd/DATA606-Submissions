@@ -93,8 +93,18 @@ you will need to obtain sample sizes to check the conditions. You can compute
 the group size using the same `by` command above but replacing `mean` with 
 `length`.
 
+```{r by-length, eval=TRUE}
+by(nc$weight, nc$habit, length)
+```
+
 4.  Write the hypotheses for testing if the average weights of babies born to 
 smoking and non-smoking mothers are different.
+
+  H0: Average weight of babies born to smoking and non-smoking mothers are not different
+  
+  H1: Average weight of babies born to smoking and non-smoking mothers are different
+  
+  
 
 Next, we introduce a new function, `inference`, that we will use for conducting
 hypothesis tests and constructing confidence intervals. 
@@ -121,6 +131,11 @@ of inference can be `"theoretical"` or `"simulation"` based.
 interval for the difference between the weights of babies born to smoking and 
 non-smoking mothers.
 
+```{r inf-weight-habit-ci1, eval=TRUE, tidy=FALSE}
+inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical")
+```
+
 By default the function reports an interval for ($\mu_{nonsmoker} - \mu_{smoker}$)
 . We can easily change this order by using the `order` argument:
 
@@ -139,15 +154,29 @@ inference(y = nc$weight, x = nc$habit, est = "mean", type = "ci", null = 0,
 on a single population parameter, there is no explanatory variable, so you can 
 omit the `x` variable from the function.
 
+```{r inf-length-ci, eval=TRUE, tidy=FALSE}
+inference(y = nc$weeks, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical")
+```
 -   Calculate a new confidence interval for the same parameter at the 90% 
 confidence level. You can change the confidence level by adding a new argument 
 to the function: `conflevel = 0.90`.
 
+```{r inf-length-ci-90, eval=TRUE, tidy=FALSE}
+inference(y = nc$weeks, est = "mean", type = "ci", null = 0, 
+          alternative = "twosided", method = "theoretical", conflevel = 0.90)
+```
+
 -   Conduct a hypothesis test evaluating whether the average weight gained by 
 younger mothers is different than the average weight gained by mature mothers.
 
+```{r inf-young-weight-ht, eval=TRUE, tidy=FALSE}
+inference(y = nc$weight, x = nc$mature, est = "mean", type = "ht", null = 0, 
+          alternative = "twosided", method = "theoretical")
+```
 -   Now, a non-inference task: Determine the age cutoff for younger and mature 
 mothers. Use a method of your choice, and explain how your method works.
+
 
 -   Pick a pair of numerical and categorical variables and come up with a 
 research question evaluating the relationship between these variables. 
