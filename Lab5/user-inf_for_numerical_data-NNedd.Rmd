@@ -177,6 +177,18 @@ inference(y = nc$weight, x = nc$mature, est = "mean", type = "ht", null = 0,
 -   Now, a non-inference task: Determine the age cutoff for younger and mature 
 mothers. Use a method of your choice, and explain how your method works.
 
+```{r cutt-off, eval=TRUE}
+library(dplyr)
+mature_rows <- filter(nc, mature == "mature mom")
+younger_rows <- filter(nc, mature == "younger mom")
+
+min_mature <- min(mature_rows$fage,na.rm = TRUE)
+max_younger <- max(younger_rows$fage, na.rm = TRUE)
+
+cut_off <- (abs(min_mature - max_younger))/2
+```
+There is no clear cutoff age for younger and mature mothers in the data.  Therefore the average of the limit values (highest younger mom and lowest mature mom) will be used as the cut off value.
+
 
 -   Pick a pair of numerical and categorical variables and come up with a 
 research question evaluating the relationship between these variables. 
@@ -184,6 +196,14 @@ Formulate the question in a way that it can be answered using a hypothesis test
 and/or a confidence interval. Answer your question using the `inference` 
 function, report the statistical results, and also provide an explanation in 
 plain language.
+
+Variables:  fage and premie
+Research Question: Is the average age of mothers who give birth to premature babies greater than those that give birth to full term babies?
+
+```{r inf-premie-fage-ht, eval=TRUE, tidy=FALSE}
+inference(y = nc$fage, x = nc$premie, est = "mean", type = "ht", null = 0, 
+          alternative = "greater", method = "theoretical")
+```
 
 <div id="license">
 This is a product of OpenIntro that is released under a [Creative Commons 
