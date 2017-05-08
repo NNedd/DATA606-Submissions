@@ -83,8 +83,7 @@ by(nc$weight, nc$habit, mean)
 ```
 
 There is an observed difference, but is this difference statistically 
-significant? In order to answer this question we will conduct a hypothesis test
-.
+significant? In order to answer this question we will conduct a hypothesis test.
 
 ## Inference
 
@@ -185,9 +184,9 @@ younger_rows <- filter(nc, mature == "younger mom")
 min_mature <- min(mature_rows$fage,na.rm = TRUE)
 max_younger <- max(younger_rows$fage, na.rm = TRUE)
 
-cut_off <- (abs(min_mature - max_younger))/2
+cut_off <- (min_mature + max_younger)/2
 ```
-There is no clear cutoff age for younger and mature mothers in the data.  Therefore the average of the limit values (highest younger mom and lowest mature mom) will be used as the cut off value.
+There is no clear cutoff age for younger and mature mothers in the data.  Therefore the average of the limit values (highest younger mom and lowest mature mom) will be used as the cut off value: `r cut_off`
 
 
 -   Pick a pair of numerical and categorical variables and come up with a 
@@ -198,12 +197,13 @@ function, report the statistical results, and also provide an explanation in
 plain language.
 
 Variables:  fage and premie
-Research Question: Is the average age of mothers who give birth to premature babies greater than those that give birth to full term babies?
+Research Question: Is the average age of mothers who give birth to premature babies different than those that give birth to full term babies?
 
 ```{r inf-premie-fage-ht, eval=TRUE, tidy=FALSE}
 inference(y = nc$fage, x = nc$premie, est = "mean", type = "ht", null = 0, 
-          alternative = "greater", method = "theoretical")
+          alternative = "twosided", method = "theoretical")
 ```
+**Since the p value is > 0.05 we do not have enough evidence to reject the null hypothesis and conclude that there is no evidence to suggest that the average of mothers giving birth to premature babies is different than the average age of those mothers giving birth to full term babies.**
 
 <div id="license">
 This is a product of OpenIntro that is released under a [Creative Commons 

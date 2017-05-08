@@ -1,0 +1,161 @@
+---
+title: "DATA 606 Data Project Proposal"
+author: "N Nedd"
+date: "March 24 2017"
+output: html_document
+---
+
+The Elo Rating system, first developed for rating chess players, is a common rating system used across competitive events such as basketball, football, go and scrabble.
+
+This project seeks to investigate the effectiveness of elo ratings (of basketball teams) as a predictive measure of the outcome of a game as against home court advantage. 
+
+### Data Preparation
+
+```{r setup, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+#setup packages
+if("dplyr" %in% rownames(installed.packages()) == FALSE) {install.packages("dplyr")}
+library(dplyr)
+if("ggplot2" %in% rownames(installed.packages()) == FALSE) {install.packages("ggplot2")}
+library(ggplot2)
+
+
+# load data
+
+URL_nba_elo <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/nba-elo/nbaallelo.csv"
+
+nba_data <- read.csv(URL_nba_elo) 
+nbadata <-  filter(nba_data,X_iscopy == 0)
+
+nbadata2 <- filter(nba_data, game_location == 'H')
+nbadata3 <- filter(nba_data, game_location == 'A')
+
+index <- sample(c(TRUE, FALSE), length(nba_data), replace=TRUE, prob=c(0.5,0.5))
+nbadata2_a <- nbadata2[index,]
+nbadata2_b <- nbadata2[!index,]
+
+
+index <- sample(c(TRUE, FALSE), length(nba_data), replace=TRUE, prob=c(0.5,0.5))
+nbadata3_a <- nbadata3[index,]
+nbadata3_b <- nbadata3[!index,]
+
+sampleA <- rbind(nbadata2_a, nbadata3_a)
+sampleB <- rbind(nbadata2_b, nbadata2_b)
+
+```
+The project will use sample A
+
+### Research question 
+
+**You should phrase your research question in a way that matches up with the scope of inference your dataset allows for.**
+
+Which is a better predictor of whether a team will win a basketball game: elo rating of the competing teams or home court advantage?
+
+
+
+### Cases 
+
+**What are the cases, and how many are there?**
+Each case represents a game played by a basketball team.  There are 126314 cases.  These cases represent `r 126314/2` games since there will be two cases per game (one for each team competing in the game).
+ 
+
+### Data collection 
+
+**Describe the method of data collection.**
+The data was compiled by fivethirtyeight.com from  the third party source http://www.basketball-reference.com/.
+
+
+### Type of study 
+
+**What type of study is this (observational/experiment)?**
+
+This is an observational study.
+
+### Data Source 
+
+**If you collected the data, state self-collected. If not, provide a citation/link.**
+
+The Complete History of the NBA by Ruben Fischer-Baum and Nate Silver (https://projects.fivethirtyeight.com/complete-history-of-the-nba/#spurs)
+
+The data can be accessed here: https://github.com/fivethirtyeight/data/tree/master/nba-elo
+
+
+### Response 
+
+**What is the response variable, and what type is it (numerical/categorical)?**
+
+The response variable is game_result: whether the team won/loss.  It is categorical.
+
+
+### Explanatory 
+
+**What is the explanatory variable, and what type is it (numerical/categorical)?**
+
+The explanatory variables are:
+
+1. elo_i: The elo rating of the team before the game. It is numerical
+2. opp_elo_i: The elo rating of the oposing team before the game.  It is numerical
+3. game_location: Whether the game was an away game or home game.  It is categorical
+
+
+
+### Relevant summary statistics 
+
+**Provide summary statistics relevant to your research question. For example, if you’re comparing means across groups provide means, SDs, sample sizes of each group. This step requires the use of R, hence a code chunk is provided below. Insert more code chunks as needed.**
+
+####game_result
+```{r}
+table(sampleA$game_result, useNA = 'ifany')
+prop.table(table(sampleA$game_result, useNA='ifany')) * 100
+
+```
+
+####game_location
+
+```{r}
+table(sampleA$game_location, useNA = 'ifany')
+prop.table(table(sampleA$game_location, useNA='ifany')) * 100
+
+```
+
+####Location vs. Result
+
+```{r}
+table(sampleA$game_location, sampleA$game_result)
+```
+
+
+
+#### elo_i
+
+```{r}
+summary(sampleA$elo_i)
+
+```
+
+
+
+```{r}
+ggplot(sampleA, aes(x=elo_i)) + geom_histogram(fill="white", colour="black") + facet_grid(game_result ~.)
+```
+
+#### opp_elo_i
+```{r}
+summary(sampleA$opp_elo_i)
+```
+
+```{r}
+ggplot(sampleA, aes(x=opp_elo_i)) + geom_histogram(fill="white", colour="black") + facet_grid(game_result ~.)
+```
+
+
+####elo_i vs opp_elo_i
+```{r}
+plot(sampleA$elo_i, sampleA$opp_elo_i)
+```
+
+
+```{r}
+ggplot(sampleA, aes(x=elo_i, y=opp_elo_i)) + geom_point() + facet_grid(game_result ~ .)
+```
+
+

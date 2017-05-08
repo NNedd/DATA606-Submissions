@@ -33,14 +33,14 @@ Take a moment to review the report then address the following questions.
     percentages appear to be *sample statistics* (derived from the data 
     sample) or *population parameters*?
     
-    The percentages appear to be sample statistics since they reported the results     of a poll.
+    **The percentages appear to be sample statistics since they reported the results of a poll.**
 
 2.  The title of the report is "Global Index of Religiosity and Atheism". To
     generalize the report's findings to the global human population, what must 
     we assume about the sampling method? Does that seem like a reasonable 
     assumption?
     
-    We must assume that the sampling method was random in order to generalise the      reports finding to the global human population.
+    **We must assume that the sampling method was random in order to generalise the reports finding to the global human population.**
 
 ## The data
 
@@ -56,6 +56,9 @@ load("more/atheism.RData")
 
 3.  What does each row of Table 6 correspond to? What does each row of 
     `atheism` correspond to?
+    
+    * Each row in Table 6 corresponds to the poll results of a particular country.
+    * Each row of the atheism data frame corresponds to a response by an individual noting the nationality of the person, their response and the year.
 
 To investigate the link between these two ways of organizing this data, take a 
 look at the estimated proportion of atheists in the United States. Towards 
@@ -70,6 +73,12 @@ the same number using the `atheism` data.
 ```{r us-atheism, eval=TRUE}
 us12 <- subset(atheism, nationality == "United States" & year == "2012")
 ```
+
+```{r prop-atheist, eval = TRUE}
+table1 <- table(us12$response)
+prop.table(table1)
+```
+
 
 ## Inference on proportions
 
@@ -87,6 +96,12 @@ hypothesis test.
 5.  Write out the conditions for inference to construct a 95% confidence
     interval for the proportion of atheists in the United States in 2012.
     Are you confident all conditions are met?
+The  conditions for inference are:
+* That the sample is independent
+* That there are at least 10 successes and 10 failures.
+
+These conditions are met.
+
 
 If the conditions for inference are reasonable, we can either calculate
 the standard error and construct the interval by hand, or allow the `inference`
@@ -108,12 +123,52 @@ the error margin for surveys of this kind is $\pm$ 3-5% at 95% confidence".
 6.  Based on the R output, what is the margin of error for the estimate of the 
     proportion of the proportion of atheists in US in 2012?
 
+The margin of error for this data according to the R output is approximately 4-6%    
+    
+
 7.  Using the `inference` function, calculate confidence intervals for the 
     proportion of atheists in 2012 in two other countries of your choice, and 
     report the associated margins of error. Be sure to note whether the 
     conditions for inference are met. It may be helpful to create new data 
     sets for each of the two countries first, and then use these data sets in 
     the `inference` function to construct the confidence intervals.
+    
+Country 1: Canada
+
+```{r can-atheism, eval=TRUE}
+can12 <- subset(atheism, nationality == "Canada" & year == "2012")
+```
+
+```{r prop-atheist2, eval = TRUE}
+table2 <- table(can12$response)
+table2
+```
+
+The sample was independent and there are at least 10 success and failures, so conditions exist for inference.
+
+```{r can-atheism-ci, eval=TRUE, tidy = FALSE}
+inference(can12$response, est = "proportion", type = "ci", method = "theoretical", 
+          success = "atheist")
+```
+Country 2: Australia
+
+```{r aus-atheism, eval=TRUE}
+aus12 <- subset(atheism, nationality == "Australia" & year == "2012")
+```
+
+```{r prop-atheist3, eval = TRUE}
+table3 <- table(aus12$response)
+table3
+```
+
+The sample was independent and there are at least 10 success and failures, so conditions exist for inference.
+
+```{r aus-atheism-ci, eval=TRUE, tidy = FALSE}
+inference(aus12$response, est = "proportion", type = "ci", method = "theoretical", 
+          success = "atheist")
+```
+
+
 
 ## How does the proportion affect the margin of error?
 
