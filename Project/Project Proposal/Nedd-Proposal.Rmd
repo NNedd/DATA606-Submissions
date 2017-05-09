@@ -40,7 +40,7 @@ nbadata3_b <- nbadata3[!index,]
 
 sampleA <- rbind(nbadata2_a, nbadata3_a)
 sampleB <- rbind(nbadata2_b, nbadata2_b)
-
+3
 ```
 The project will use sample A
 
