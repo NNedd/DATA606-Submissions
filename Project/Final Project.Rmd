@@ -1,0 +1,238 @@
+---
+title: "Your Document Title"
+author: "Document Author"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+---
+
+### Part 1 - Introduction:
+
+This project seeks to investigate the effectiveness of elo ratings (of basketball teams) as a predictive measure of the outcome of a game as against home court advantage. 
+
+The Elo rating system was originally used as a system for calculating the skill of chess competitors but have since been adapted for other competitions as well as team sports such as American Football and Basketball.  
+
+Home court advantage has long been established as an addition edge when playing any game.  The fans, the atmosphere, the comfort are all factors that research has shown (FiveThirtyEight) that indeed in the NBA home court advantage is approximately 3.5 points.
+
+Since the Elo system takes into consideration multiple factors then it is generally assumed that if two teams compete, the one with the higher elo rating would be the winner.  On the other hand, home court advantage has always been considered a major advantage in basketball.  So much so that higher seeded teams are given the valued home court advantage as a reward for their hard work. 
+
+As a result I would like to find out if Elo rating is really a better predictor for a game winner than home court advantage.  As a fan of basketball, I am curious about this issue.
+
+I feel that analysis such as this would be useful with fantasy basketball enthusiasts.   When selecting a player for a fantasy team, should the player that will raise the team's elo rating be selected or the player with the greater home games.
+
+
+
+
+### Part 2 - Data:
+
+####Data Collection
+
+The data was complied by the fivethirtyeight team using data collected from Basketball-Reference.com (http://www.basketball-reference.com/).  Variables about games played were collected form the website and the Elo generated using a formula similar to that used by the NFL.  The Elo formula takes into consideration the following features:
+
+- Where the game is played (Home court advantage)
+
+- Margin of victory
+
+- Portion of previous year's rating
+
+- Movement of teams (addition/reduction of teams, etc)
+
+####Cases
+
+Each case represents a game played by a basketball team.  There are 126314 cases.  These cases represent `r 126314/2` games since there will be two cases per game (one for each team competing in the game).
+
+####Variables
+
+The variables that will be studied are:
+
+- Explanatory
+
+1. elo_i: The elo rating of the team before the game. It is numerical
+2. opp_elo_i: The elo rating of the oposing team before the game.  It is numerical
+3. game_location: Whether the game was an away game or home game.  It is categorical
+
+
+- Response
+
+4. game_result: whether the team won/loss.  It is categorical.
+
+####Type of Study
+
+The study is an observation one and not an experiment.  Basically, only observations about historical data will be analysed.  The project will not have a treatment and control sample so that differences in behaviour can be observed.
+
+
+####Scope of Inference
+The population of concern is all basketball games.  The sample taken relates to NBA games played only.  The study cannot be applied to non-nba games since any generated variables (in order to derive Elo) would have been NBA specific and may not migrate well to other basketball leagues.
+
+In addition, since the data is not an experimental, causal links cannot be made between the variables of interest.
+
+
+
+### Part 3 - Exploratory data analysis:
+
+Since the dataset contains two entries for each game, only half of the dataset will be used in the analysis.  This dataset will comprise of half away games and half home games.
+
+####Loading the data
+
+```{r setup, echo=TRUE, results='hide', warning=FALSE, message=FALSE}
+#setup packages
+if("dplyr" %in% rownames(installed.packages()) == FALSE) {install.packages("dplyr")}
+library(dplyr)
+if("ggplot2" %in% rownames(installed.packages()) == FALSE) {install.packages("ggplot2")}
+library(ggplot2)
+
+
+# load data
+
+URL_nba_elo <- "https://raw.githubusercontent.com/fivethirtyeight/data/master/nba-elo/nbaallelo.csv"
+
+nba_data <- read.csv(URL_nba_elo) 
+nbadata <-  filter(nba_data,X_iscopy == 0)
+
+nbadata2 <- filter(nba_data, game_location == 'H')
+nbadata3 <- filter(nba_data, game_location == 'A')
+
+index <- sample(c(TRUE, FALSE), length(nba_data), replace=TRUE, prob=c(0.5,0.5))
+nbadata2_a <- nbadata2[index,]
+nbadata2_b <- nbadata2[!index,]
+
+
+index <- sample(c(TRUE, FALSE), length(nba_data), replace=TRUE, prob=c(0.5,0.5))
+nbadata3_a <- nbadata3[index,]
+nbadata3_b <- nbadata3[!index,]
+
+sampleA <- rbind(nbadata2_a, nbadata3_a)
+sampleB <- rbind(nbadata2_b, nbadata2_b)
+```
+
+
+####game_result
+```{r}
+table(sampleA$game_result, useNA = 'ifany')
+prop.table(table(sampleA$game_result, useNA='ifany')) * 100
+
+```
+
+####game_location
+
+```{r}
+table(sampleA$game_location, useNA = 'ifany')
+prop.table(table(sampleA$game_location, useNA='ifany')) * 100
+
+```
+
+####Location vs. Result
+
+```{r}
+table(sampleA$game_location, sampleA$game_result)
+```
+
+
+```{r}
+p <-ggplot(sampleA, aes(game_result))
+p +geom_bar(stat = "count", aes(fill = game_location), position = "dodge")
+
+
+```
+
+For losses, there were more away games played.  By the same token, for wins there were more home games played.  This certainly indicates a defined relationship between game result and game location.
+
+#### elo_i
+
+```{r}
+summary(sampleA$elo_i)
+
+```
+
+
+
+```{r}
+ggplot(sampleA, aes(x=elo_i)) + geom_histogram(fill="white", colour="black") + facet_grid(game_result ~.)
+
+ggplot(aes(y = elo_i, x = game_result), data = sampleA) + geom_boxplot()
+```
+
+The variable elo_i (team's elo) seems to follow a normal distribution
+
+As expected, the elo for the team is higher during wins.
+
+#### Opponent elo vs Results
+```{r}
+summary(sampleA$opp_elo_i)
+```
+
+```{r}
+ggplot(sampleA, aes(x=opp_elo_i)) + geom_histogram(fill="white", colour="black") + facet_grid(game_result ~.)
+
+ggplot(aes(y = opp_elo_i, x = game_result), data = sampleA) + geom_boxplot()
+```
+The elo of the opposing team also follows a normal distibution
+
+As expected, based on the side by side boxplot, the elo is higher for the opposing team when a team loses. 
+
+
+
+### Part 4 - Inference:
+
+####Team's elo to predict result
+```{r}
+new_sample <- select(sampleA, elo_i, opp_elo_i, game_location, game_result)
+new_sample2<- new_sample
+new_sample2$game_result <- as.numeric(new_sample2$game_result)
+
+
+cor(new_sample2$game_result, new_sample2$elo_i)
+
+model1 <- lm(game_result ~ elo_i, data=new_sample2)
+summary(model1)
+
+
+model1a <- glm(game_result ~ elo_i, data=new_sample, family = "binomial")
+summary(model1a)
+```
+There is low correlation between game result and team elo and the estimate for elo_i is very low indicating that it does not have much effect on the game result.  However small this estimate is, it is still a statistically significant predictor.
+
+
+*Conditions Check*
+```{r}
+hist(model1$residuals)
+plot(model1$residuals ~ new_sample2$elo_i)
+abline(h=0, lty=3)
+```
+####Opponent's Elo to predict result
+
+```{r}
+cor(new_sample2$game_result, new_sample2$opp_elo_i)
+
+model2 <- lm(game_result ~ opp_elo_i, data=new_sample2)
+summary(model2)
+
+model2a <- glm(game_result ~ opp_elo_i, data = new_sample, family = "binomial")
+summary(model2a)
+```
+
+
+```{r}
+
+
+#cor(new_sample2$game_result, new_sample2$game_location)
+
+model3 <- lm(game_result ~ game_location, data=new_sample2)
+summary(model3)
+
+model3a <- glm(game_result ~ game_location, data=new_sample, family = "binomial")
+summary(model3a)
+```
+
+### Part 5 - Conclusion: 
+
+It seems as though the game_location has most impact on game result.  This would mean that even though elo is used as a ranking mechanism for NBA team, the traditional home court advantage is still a better predictor of the game result.
+
+### References:
+
+The Complete History of the NBA by Ruben Fischer-Baum and Nate Silver (https://projects.fivethirtyeight.com/complete-history-of-the-nba/#spurs)
+
+
+
