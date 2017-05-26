@@ -1,0 +1,217 @@
+---
+title: "Final Exam -Data 606"
+author: "N. Nedd"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: architect
+    highlight: github
+---
+
+##Part I
+
+![](Question 1.png)
+
+**Ans: b. daysDrive**
+
+
+![](Question 2.png)
+
+
+**Ans: b. mean = 3.5, median = 3.3**
+
+
+![](Question 3.png)
+
+**Ans: a. Randomly assign Ebola patients to one of two groups, either the treatment or placebo group, and then compare the fever of the two groups**
+
+![](Question 4.png)
+
+**Ans: c. there is an association between natural hair colour and eye colour**
+
+
+![](Question 5.png)
+
+**Ans: c. 36.0 and 52.8**
+
+
+![](Question 6.png)
+
+**Ans: median and interquartile range; mean and standard deviation**
+
+
+![](Question 7.png)
+
+
+![](Question 7a.png)
+
+
+**Ans: Distrbution A is postively skewed and Distribution B is close to normally distributed**
+
+
+
+
+![](Question 7b.png)
+
+**Ans: Both distributions show curves that peak at around 5 since distribution B is a sample of distribution A.  Distribution B however has less spread since it involves less values when compared to Distribution A.**
+
+
+![](Question 7c.png)
+
+**Ans: The Central Limit Theorem says that when a sample is taken from a population the larger it gets(around 30) the more normal the sample distribution becomes.**
+
+
+##Part II
+
+![](Part2.png)
+
+```{r setupvars, eval=TRUE}
+options(digits=2)
+data1 <- data.frame(x=c(10,8,13,9,11,14,6,4,12,7,5),
+y=c(8.04,6.95,7.58,8.81,8.33,9.96,7.24,4.26,10.84,4.82,5.68))
+data2 <- data.frame(x=c(10,8,13,9,11,14,6,4,12,7,5),
+y=c(9.14,8.14,8.74,8.77,9.26,8.1,6.13,3.1,9.13,7.26,4.74))
+data3 <- data.frame(x=c(10,8,13,9,11,14,6,4,12,7,5),
+y=c(7.46,6.77,12.74,7.11,7.81,8.84,6.08,5.39,8.15,6.42,5.73))
+data4 <- data.frame(x=c(8,8,8,8,8,8,8,19,8,8,8),
+y=c(6.58,5.76,7.71,8.84,8.47,7.04,5.25,12.5,5.56,7.91,6.89))
+
+
+```
+
+
+```{r parta, eval=TRUE}
+
+mean(data1$x)
+mean(data1$y)
+mean(data2$x)
+mean(data2$y)
+mean(data3$x)
+mean(data3$y)
+mean(data4$x)
+mean(data4$y)
+
+```
+
+
+
+```{r partb, eval=TRUE}
+
+median(data1$x)
+median(data1$y)
+median(data2$x)
+median(data2$y)
+median(data3$x)
+median(data3$y)
+median(data4$x)
+median(data4$y)
+
+```
+
+```{r partc, eval=TRUE}
+
+sd(data1$x)
+sd(data1$y)
+sd(data2$x)
+sd(data2$y)
+sd(data3$x)
+sd(data3$y)
+sd(data4$x)
+sd(data4$y)
+
+```
+
+```{r partd, eval=TRUE}
+cor(data1)
+cor(data2)
+cor(data3)
+```
+
+
+```{r partef, eval=TRUE}
+
+data1.lm <- lm(y~x, data=data1)
+data2.lm <- lm(y~x, data=data2)
+data3.lm <- lm(y~x, data=data3)
+
+summary(data1.lm)
+summary(data2.lm)
+summary(data3.lm)
+```
+
+
+
+**Data1 Regression equation is:**
+
+$$\hat{y} = 3.0 + 0.5 * x$$
+
+The R-squared = 0.667
+
+
+**Data2 Regresstion equation is:**
+
+$$\hat{y} = 3.001 + 0.5 * x$$
+The R-squrared = 0.666
+
+
+**Data3 Regression equation is:**
+$$\hat{y} = 3.002 + 0.5 * x$$
+
+The R-squared = 0.666
+
+
+
+Appropriateness of linear model estimation:
+
+Condition 1: Linearity
+Condition 2: Constant variability
+Condition 3: Nearly normal residuals
+
+Data1 plots:
+
+```{r plot1, eval=TRUE}
+plot(data1.lm$residuals ~ data1$y)
+abline(h=0, lty=3)
+
+hist(data1.lm$residuals)
+qqnorm(data1.lm$residuals)
+qqline(data1.lm$residuals)
+
+
+```
+Data 1 does not satisfy the conditions
+
+
+Data2 plots:
+
+```{r plot2, eval=TRUE}
+plot(data2.lm$residuals ~ data2$y)
+abline(h=0, lty=3)
+
+hist(data2.lm$residuals)
+qqnorm(data2.lm$residuals)
+qqline(data2.lm$residuals)
+
+
+```
+Data 2 does not satisfy conditions
+
+
+
+Data 3 plots:
+
+```{r plot3, eval=TRUE}
+plot(data3.lm$residuals ~ data3$y)
+abline(h=0, lty=3)
+
+hist(data3.lm$residuals)
+qqnorm(data3.lm$residuals)
+qqline(data3.lm$residuals)
+
+
+```
+Data 3, while nearly normal does not satisfy the other conditions
+
+
+**Plots are important as they allow us to see a clearer picture that we may not otherwise see from figures alone.**
+
